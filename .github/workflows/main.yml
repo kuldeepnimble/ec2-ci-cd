@@ -16,21 +16,24 @@ jobs:
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/key
+          chmod 600 ~/.ssh/key
           ssh-keyscan -H ${{ secrets.EC2_IP_ADDRESS }} >> ~/.ssh/known_hosts
+          ls -la ~/.ssh  # Debugging: List files and permissions
 
       - name: Test SSH Connection
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP_ADDRESS }} "echo 'SSH connection successful!'"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/key ubuntu@${{ secrets.EC2_IP_ADDRESS }} "echo 'SSH connection successful!'"
+          # List the home directory for debugging
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/key ubuntu@${{ secrets.EC2_IP_ADDRESS }} "ls -la"
 
       - name: Copy index.html to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./index.html ubuntu@${{ secrets.EC2_IP_ADDRESS }}:/tmp/index.html
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/key ./index.html ubuntu@${{ secrets.EC2_IP_ADDRESS }}:/tmp/index.html
 
       - name: Setup Apache2 and Deploy index.html on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP_ADDRESS }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/key ubuntu@${{ secrets.EC2_IP_ADDRESS }} << 'EOF'
             # Update package lists, install apache2 and unzip utility
             sudo apt update -y
             sudo apt install apache2 -y
