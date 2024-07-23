@@ -18,7 +18,11 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Setup Apache2 on EC2 and Deploy index.html
+      - name: Copy index.html to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no ./index.html ubuntu@${{ secrets.EC2_IP_ADDRESS }}:/tmp/index.html
+
+      - name: Setup Apache2 and Deploy index.html on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_IP_ADDRESS }} << 'EOF'
             # Update package lists, install apache2 and unzip utility
@@ -38,7 +42,3 @@ jobs:
             # Restart apache2 to apply changes
             sudo systemctl restart apache2
           EOF
-
-      - name: Copy index.html to EC2
-        run: |
-          scp -o StrictHostKeyChecking=no ./index.html ubuntu@${{ secrets.EC2_IP_ADDRESS }}:/tmp/index.html
