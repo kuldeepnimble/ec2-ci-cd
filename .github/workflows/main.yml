@@ -14,17 +14,23 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup SSH Key
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_IP_ADDRESS }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH Connection
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP_ADDRESS }} "echo 'SSH connection successful!'"
 
       - name: Copy index.html to EC2
         run: |
-          scp -o StrictHostKeyChecking=no ./index.html ubuntu@${{ secrets.EC2_IP_ADDRESS }}:/tmp/index.html
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./index.html ubuntu@${{ secrets.EC2_IP_ADDRESS }}:/tmp/index.html
 
       - name: Setup Apache2 and Deploy index.html on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_IP_ADDRESS }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP_ADDRESS }} << 'EOF'
             # Update package lists, install apache2 and unzip utility
             sudo apt update -y
             sudo apt install apache2 -y
