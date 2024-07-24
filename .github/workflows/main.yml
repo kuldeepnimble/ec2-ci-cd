@@ -21,11 +21,11 @@ jobs:
           ssh-keyscan -H ${{ secrets.EC2_IP_ADDRESS }} >> ~/.ssh/known_hosts
           ls -la ~/.ssh  # Debugging: List files and permissions
 
-      - name: Test SSH Connection
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP_ADDRESS }} "echo 'SSH connection successful!'"
+      #- name: Test SSH Connection
+        #run: |
+          #ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP_ADDRESS }} "echo 'SSH connection successful!'"
           # List the home directory for debugging
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP_ADDRESS }} "ls -la"
+          #ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP_ADDRESS }} "ls -la"
 
       - name: Copy index.html to EC2
         run: |
