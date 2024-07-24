@@ -29,11 +29,11 @@ jobs:
 
       - name: Copy index.html to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./index.html ubuntu@${{ secrets.EC2_IP_ADDRESS }}:/tmp/index.html
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./index.html ubuntu@3.111.36.41:/tmp/index.html
 
       - name: Setup Apache2 and Deploy index.html on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_IP_ADDRESS }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@3.111.36.41 << 'EOF'
             # Update package lists, install apache2 and unzip utility
             sudo apt update -y
             sudo apt install apache2 -y
